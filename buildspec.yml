@@ -4,8 +4,8 @@ env:
   variables:
     APP_NAME: "twitter-app"
   parameter-store:
-    ECR_REPOSITORY: "/codebuild/ecr_repository"
-    ECR_CLUSTER: "/codebuild/ecs/twitter-app"
+    ECR_REPOSITORY: "/codebuild/ecs/twitter-app/ecr"
+    ECS_CLUSTER: "/codebuild/ecs/twitter-app/cluster"
 
 phases:
   install: 
