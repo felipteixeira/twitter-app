@@ -1,0 +1,45 @@
+version: 0.2
+
+env:
+  parameter-store:
+    ECR_REPOSITORY: "/codebuild/ecr_repository"
+    ECR_CLUSTER: "/codebuild/ecs/cluster-meajuda"
+    ECR_NODE: "/codebuild/docker_image/node"
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+      - echo "Rodando esteira..."
+      - echo Logando no Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - REPOSITORY_URI=${ECR_REPOSITORY}/ecr_meajudaweb-angular
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - ECS_CLUSTER=${ECR_CLUSTER}
+      - ECS_SERVICE=meajudaweb-angular
+      - echo Building the Node code...
+  build:
+    commands:
+      - docker container run -i --rm -w="/app" -e "NG_CLI_ANALYTICS=is-ci" -v $(pwd):/app --name build-angular $ECR_NODE sh -c "npm install; npm install -g ng-cli; npm run build:$ANGULAR_BUILD"
+      - ls
+      - echo Criando imagem docker... $REPOSITORY_URI
+      - cp Dockerfile dist/Dockerfile
+      - cp -r config dist/config
+      - cd dist
+      - docker build --build-arg ECR_NGINX=$ECR_NGINX -t $REPOSITORY_URI:latest . 
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo "Build finalizado em `date`"
+      - echo Fazendo push para ECR...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - aws ecs update-service --force-new-deployment --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE}
+
+cache:
+  paths:
+   - 'node_modules/**/*'
