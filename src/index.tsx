@@ -6,7 +6,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router basename='/github-repo-explore'>
+    <Router basename='/hashtag-explore'>
       <App />
     </Router>
   </React.StrictMode>,
