@@ -1,30 +1,37 @@
-// import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-// const api = axios.create({
-//    baseURL: 'https://api.github.com/'
-// });
+const token = 'Bearer AAAAAAAAAAAAAAAAAAAAADNnNgEAAAAAsZyhS8O9r2Ea1zr8TCWIcDxIzXw%3DasXSU3q8zV8T4pz65sfFdv6WoOdD3ZlpCiax4LxyYCRe1YzgRN'
 
-// export default api;
+interface Metrics {
+    followers_count: number;
+    following_count: number;
+    tweet_count: number;
+    listed_count: number;
+}
 
+interface Users {
+    public_metrics: Metrics;
+}
 
-import Twit from 'twit';
-// // require('dotenv').config();
-// const Twit = require('twit');
+interface Includes {
+    users: Users[];
+}
 
+interface Result {
+    data: any;
+    includes: Includes;
+}
 
-
-const api = new Twit({
-    consumer_key: "R9R1Zyi76INkyQ53ynP9FICOT",
-    consumer_secret: "aJzmeWjW4BoozeAOrbDzX9eifRQzy2fvKmDfIvdPnz10FKdetk",
-
-    access_token: "66278102-Oe8STDRvYxUfLeUNTY4LtXNv0ixWD4spgxbvT1c1l",
-    access_token_secret: "d9uSMPMpJ5Q7bN5CO07AYICJoy1tUSjjzHpbq8ElI1hh9"
-});
-
-// let stream = api.stream('statuses/filter', { track: '#cloud'});
-
-// stream.on('tweet', function (tweet: any) {
-//     console.log(tweet);
-// });
-
-export default api
+export const api = {
+    get(hashtag: string) {
+        return axios.get(
+            `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(hashtag)
+            }&max_results=100&expansions=author_id&user.fields=public_metrics/`,
+            { headers: { Authorization: token, 'Access-Control-Allow-Origin': '*' } }
+        ).then((result: AxiosResponse<Result>) => {
+            return result.data.includes
+        }).catch((err) => {
+            console.error(err)
+        });
+    }
+}

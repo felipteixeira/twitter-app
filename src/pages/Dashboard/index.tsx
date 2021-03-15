@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { FiChevronRight } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
-import api from '../../services/api';
+// import { FiChevronRight } from 'react-icons/fi';
+// import { Link } from 'react-router-dom';
+import {api} from '../../services/api';
 import logoImg from '../../assets/twitter.svg'
 import { Title, Form, Repositories, Error } from './styles';
 
@@ -15,7 +15,7 @@ interface Repository {
 }
 
 const Dashboard: React.FC = () => {
-    const [newRepo, setNewRepo] = useState('');
+    const [hashtag, setNewRepo] = useState('');
     const [inputError, setInputError] = useState('');
     const [tweets, setTweets] = useState<any[]>(() => {
         const storageRepositories = localStorage.getItem('@Tweets:Stream');
@@ -27,24 +27,22 @@ const Dashboard: React.FC = () => {
         }
     });
 
-
-
     useEffect(() => {
         localStorage.setItem('@Tweets:Stream', JSON.stringify(tweets));
     }, [tweets])
 
     async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
-        if (!newRepo) {
+        if (!hashtag) {
             setInputError('Digite a hashtag');
             return;
         }
 
         try {
-            const response = await api.stream('statuses/filter', { track: `#${newRepo}` });
-            response.on('tweet', function (tweet: any) {
-                setTweets([...tweets, tweet.user]);
-            });
+            const tweet = await api.get(`${hashtag}`);
+                console.log(tweet)
+                setTweets([...tweets, tweet]);
+          
         } catch (err) {
             setInputError('Repositório inexistente!');
         }
@@ -57,7 +55,7 @@ const Dashboard: React.FC = () => {
             <Title>Buscar hashtag no Twitter!</Title>
 
             <Form hasError={!!inputError} onSubmit={handleAddRepository}>
-                <input value={newRepo}
+                <input value={hashtag}
                     onChange={(e) => setNewRepo(e.target.value)}
                     placeholder="Digite uma hashtag!" />
                 <button type="submit">Pesquisar</button>
@@ -66,8 +64,8 @@ const Dashboard: React.FC = () => {
             {inputError && <Error>{inputError}</Error>}
 
             <Repositories>
-                {tweets.map(user => (
-                    <Link key={user.id} to={`/repositories/${user.name}`}>
+                {/* {tweets.map(user => (
+                    <Link key={user.tweet_count} to={`/repositories/${user.name}`}>
                         <img src={user.profile_image_url} />
                         <div>
                             <strong>{user.full_name}</strong>
@@ -77,7 +75,7 @@ const Dashboard: React.FC = () => {
 
                         <FiChevronRight size={20} />
                     </Link>
-                ))}
+                ))} */}
             </Repositories>
         </>
     )
