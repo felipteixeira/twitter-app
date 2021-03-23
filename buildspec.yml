@@ -25,7 +25,7 @@ phases:
     commands:
       - echo Build iniciado em `date`
       - echo Criando imagem docker... $REPOSITORY_URI
-      - docker build -t $REPOSITORY_URI:latest .
+      - docker build --build-arg DOCKER_IMAGE_BASE=$DOCKER_IMAGE_BASE -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
