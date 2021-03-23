@@ -6,6 +6,7 @@ env:
   parameter-store:
     ECR_REPOSITORY: "/codebuild/ecs/twitter-app/ecr"
     ECS_CLUSTER: "/codebuild/ecs/twitter-app/cluster"
+    DOCKER_IMAGE_BASE: "/codebuild/docker_image/node"
 
 phases:
   install: 
