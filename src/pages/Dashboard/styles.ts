@@ -42,7 +42,7 @@ export const Form = styled.form<FormProps>`
     button {
         width: 210px;
         height: 70px;
-        background: #04D361;
+        background: #1E90FF;
         border-radius: 0px 5px 5px 0px;
         border: 0;
         color: #FFF;
@@ -50,7 +50,7 @@ export const Form = styled.form<FormProps>`
         transition: background-color 0.2s; 
 
         &:hover {
-            background: ${shade(0.2, '#04D361')};
+            background: ${shade(0.2, '#1E90FF')};
         }
     }
 `;
