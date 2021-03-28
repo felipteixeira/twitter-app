@@ -1,20 +1,29 @@
 import React, { useState, FormEvent } from 'react';
 import { api } from '../../services/api';
 import logoImg from '../../assets/twitter.svg'
-import { Title, Form, Repositories, Error } from './styles';
+import { Title, Form, Tweets, Error } from './styles';
 import { Link } from 'react-router-dom';
 
 interface Tweet {
     id: number,
     text: string,
     author_id: string,
+    name: string,
+    username: string,
+    public_metrics?: {
+        followers_count: number;
+        following_count: number;
+        tweet_count: number;
+        listed_count: number
+    }
 }
 
 const Dashboard: React.FC = () => {
-    const [hashtag, setNewRepo] = useState('');
+    const [hashtag, setNewTweet] = useState('');
     const [inputError, setInputError] = useState('');
     const [tweets, setTweets] = useState<Tweet[]>([]);
-    async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
+
+    async function handleAddTweet(event: FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
         if (!hashtag) {
             setInputError('Digite a hashtag');
@@ -22,10 +31,15 @@ const Dashboard: React.FC = () => {
         }
         try {
             const response = await api.get(`${hashtag}`);
-            const tweetData = response.data;
+            let tweetData = response.data.map((x: any, index: number) => {
+                return {
+                    ...x,
+                    ...response.includes.users[index]
+                }
+            });
 
-            setTweets([...tweets, ...tweetData]);
-            setNewRepo('');
+            setTweets(tweetData);
+            setNewTweet('');
             setInputError('');
         } catch (err) {
             console.log(err)
@@ -37,26 +51,30 @@ const Dashboard: React.FC = () => {
             <img src={logoImg} alt="Hashtag Explorer" />
             <Title>Buscar # no Twitter!</Title>
 
-            <Form hasError={!!inputError} onSubmit={handleAddRepository}>
+            <Form hasError={!!inputError} onSubmit={handleAddTweet}>
                 <input value={hashtag}
-                    onChange={(e) => setNewRepo(e.target.value)}
+                    onChange={(e) => setNewTweet(e.target.value)}
                     placeholder="Digite uma hashtag!" />
                 <button type="submit">Pesquisar</button>
             </Form>
 
             {inputError && <Error>{inputError}</Error>}
 
-            <Repositories>
+            <Tweets>
                 {tweets.map(tweet => (
                     <Link key={tweet.id} to={'/'}>
-                        <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJorBeW2SuAHq-B1Y_mYJmxspaOIv9krcDZQ&usqp=CAU"} 
-                        alt={tweet.author_id}/>
-                        <div >
+                        <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJorBeW2SuAHq-B1Y_mYJmxspaOIv9krcDZQ&usqp=CAU"}
+                            alt={tweet.author_id} />
+                        <div>
+                            <p>{tweet.name} {`@${tweet.username}`}</p>
                             <strong>{tweet.text}</strong>
+                            <p>{`following: ${tweet?.public_metrics?.following_count}`}
+                                {` followers: ${tweet?.public_metrics?.followers_count}`}</p>
                         </div>
                     </Link>
-                ))}
-            </Repositories>
+                )
+                )}
+            </Tweets>
         </>
     )
 }

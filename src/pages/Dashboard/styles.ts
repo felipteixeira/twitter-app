@@ -62,7 +62,7 @@ export const Error = styled.span`
 
 `;
 
-export const Repositories = styled.div`
+export const Tweets = styled.div`
 margin-top: 80px;
 max-width: 700px;
 
@@ -100,7 +100,15 @@ a {
         p {
             font-size: 18px;
             color: #a8a8b3;
-            margin-top: 4px;
+            margin-top: 8px;
+            margin-bottom: -20px;
+        }
+
+        p:nth-child(1) {
+            font-size: 18px;
+            color: #3D3D4D;
+            margin-top: -20px;
+            margin-bottom: 8px;
         }
     }
 
