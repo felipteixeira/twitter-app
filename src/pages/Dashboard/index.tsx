@@ -10,6 +10,7 @@ interface Tweet {
     author_id: string,
     name: string,
     username: string,
+    profile_image_url: string,
     public_metrics?: {
         followers_count: number;
         following_count: number;
@@ -63,7 +64,7 @@ const Dashboard: React.FC = () => {
             <Tweets>
                 {tweets.map(tweet => (
                     <Link key={tweet.id} to={'/'}>
-                        <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJorBeW2SuAHq-B1Y_mYJmxspaOIv9krcDZQ&usqp=CAU"}
+                        <img src={tweet.profile_image_url}
                             alt={tweet.author_id} />
                         <div>
                             <p>{tweet.name} {`@${tweet.username}`}</p>
