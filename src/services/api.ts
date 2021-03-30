@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const nlb = 'http://nlb-prod-5953ee5c56c53ce7.elb.us-east-1.amazonaws.com'
+const nlb = 'http://nlb-prod-d851ca47635cdc62.elb.us-east-1.amazonaws.com'
 
 export const api = {
     get(hashtag: string) {
